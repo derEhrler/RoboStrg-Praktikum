@@ -22,7 +22,7 @@ for i=0:127
     e = [e_x,e_y,e_z]';
 
     % Calculation step with transpose jacobian
-    K = 1;
+    K = 5;
     q = q + K * transpose(J) * e;
 end
 

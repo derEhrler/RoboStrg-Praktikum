@@ -39,7 +39,7 @@ A6 = DH(DH_Parameter(6,:));
 
 %% Transformation Hand-Roboter
 % Bitte vervollständigen
-
+% TODO: Funktion draus machen
 T = zeros(4,4,6);
 
 T(:,:,1) = A0*A1;

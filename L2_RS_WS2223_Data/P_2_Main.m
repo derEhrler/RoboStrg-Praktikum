@@ -21,3 +21,8 @@ P_start = [0.0 0.0 0.0]';
 P_soll = [0.41 0.2595 0.084]';
 
 P = linear_Interpol(P_start, P_soll, Zwischenschritte);
+
+%% Erweiterung mit Geschw. und Beschleunigung
+%v = ;
+%a = ;
+P = P_Interp(P_start, P_soll, v, a);

@@ -24,6 +24,7 @@ pn = P_soll;
 tn = t2 + v/a;
 
 %time steps
+steps = 0:dt:tn;
 
 
 

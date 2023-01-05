@@ -29,6 +29,8 @@ end
 
 %normal distance 
 if shortDist == false
+    disp('Distance is long');
+
     %Zielpunkt
     pn = P_soll;
     tn = t2 + v/a;
@@ -63,7 +65,33 @@ if shortDist == false
 end
 
 if shortDist == true
-    
+    disp('Distance is short');
+    %Zeitpunkte
+    t1kurz = t0 + t1 - 0.5 * (t2 - t1);
+    tnkurz = t1kurz + 0.5 * (t2 - t1);
+
+    %time steps
+    noSteps = tnkurz / dt;
+    noSteps = round(noSteps,TieBreaker="plusinf");
+    P = zeros(noSteps,3);
+    V = zeros(noSteps,3);
+
+    %interpolating for acceleration phase
+    currIndex = 1;
+    for i = 0:dt:t1kurz
+        P(currIndex,:) = p0' + directionP' * 0.5 * a * i^2;
+        V(currIndex,:) = directionP' * a * i;
+        currIndex = currIndex + 1;
+    end
+
+    p2 =  P(currIndex,:)';
+
+    %interpolating for breaking phase
+    for i = t1kurz:dt:tnkurz
+        P(currIndex,:) = p2' + directionP' * v * (i - t1kurz) - directionP' * 0.5 * a * (i - t1kurz)^2; 
+        V(currIndex,:) = directionP' * v - directionP' * a * (i - t2);
+        currIndex = currIndex + 1;
+    end
 end
 
 
@@ -73,9 +101,9 @@ hold on;
 plot(P(:,1));
 plot(P(:,2));
 plot(P(:,3));
-plot(V(:,1));
-plot(V(:,2));
-plot(V(:,3));
+%plot(V(:,1));
+%plot(V(:,2));
+%plot(V(:,3));
 hold off;
 
 

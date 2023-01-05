@@ -28,7 +28,7 @@ for i=0:127
     end
 
     % Calculation step with transpose jacobian
-    K = 15;
+    K = 3;
     MAX_ANGLE_STEP = 2;
 
     J_pseudo = transpose(J) * inv(J * transpose(J));

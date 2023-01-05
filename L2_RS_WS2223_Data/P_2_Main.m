@@ -17,7 +17,7 @@ q_soll_Pseudo = IK_Pseudo(q,[x y z]);
 
 %% lineare Interpolation
 Zwischenschritte = 128;
-P_start = [0.0 0.0 0.0]';
+P_start = [0.1 0.1 0.1]';
 P_soll = [0.41 0.2595 0.084]';
 
 %P = linear_Interpol(P_start, P_soll, Zwischenschritte);
@@ -26,5 +26,19 @@ P_soll = [0.41 0.2595 0.084]';
 v = 0.5;
 a = 0.9;
 [P,testValue] = P_Interp(P_start, P_soll, v, a);
+
+%% Inverse Kinematik für alle P
+P_IK_Matrix = zeros(length(P(:,1)),6);
+P_IK_Matrix(1,:) = IK_Pseudo(q,[x y z]);
+for i = 2:length(P(:,1))
+    P_IK_Matrix(i,:) = IK_Pseudo(P_IK_Matrix(i-1,:)',P(i,:))';
+end
+
+%% Werte in ein File lesen
+fid = fopen( 'P_Matrix.txt', 'wt' );
+for i = 1:length(P(:,1))
+  fprintf(fid, '%f %f %f\n' , P(i,1), P(i,2), P(i,3));
+end
+fclose(fid);
 
 

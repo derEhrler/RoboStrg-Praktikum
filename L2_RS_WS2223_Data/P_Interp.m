@@ -27,7 +27,7 @@ if dot(vecP1P2,directionP) < 0
     shortDist = true;
 end
 
-%normal distance 
+%% long distance
 if shortDist == false
     disp('Distance is long');
 
@@ -64,11 +64,15 @@ if shortDist == false
     end
 end
 
+%% short distance
 if shortDist == true
     disp('Distance is short');
-    %Zeitpunkte
-    t1kurz = t0 + t1 - 0.5 * (t2 - t1);
-    tnkurz = t1kurz + 0.5 * (t2 - t1);
+
+    %time, position, velocity
+    t1kurz = sqrt((distanceP/2)*2 / a);
+    tnkurz = 2 * t1kurz;
+    p1 = p0 + directionP * 0.5 * a * t1kurz^2;
+    vkurz = a * (t1kurz - t0);
 
     %time steps
     noSteps = tnkurz / dt;
@@ -84,29 +88,25 @@ if shortDist == true
         currIndex = currIndex + 1;
     end
 
-    p2 =  P(currIndex,:)';
-
     %interpolating for breaking phase
     for i = t1kurz:dt:tnkurz
-        P(currIndex,:) = p2' + directionP' * v * (i - t1kurz) - directionP' * 0.5 * a * (i - t1kurz)^2; 
-        V(currIndex,:) = directionP' * v - directionP' * a * (i - t2);
+        P(currIndex,:) = p1' + directionP' * vkurz * (i - t1kurz) - directionP' * 0.5 * a * (i - t1kurz)^2; 
+        V(currIndex,:) = directionP' * vkurz - directionP' * a * (i - t1kurz);
         currIndex = currIndex + 1;
     end
 end
-
-
 
 
 hold on;
 plot(P(:,1));
 plot(P(:,2));
 plot(P(:,3));
-%plot(V(:,1));
-%plot(V(:,2));
-%plot(V(:,3));
+plot(V(:,1));
+plot(V(:,2));
+plot(V(:,3));
 hold off;
 
 
-testValue = V;
+testValue = p2;
 out = P;
 end

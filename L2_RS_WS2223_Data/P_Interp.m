@@ -42,7 +42,7 @@ if shortDist == false
     %interpolating for acceleration phase
     currIndex = 1;
     for i = 0:dt:t1
-        P(currIndex,:) = directionP' * 0.5 * a * i^2;
+        P(currIndex,:) = p0' + directionP' * 0.5 * a * i^2;
         V(currIndex,:) = directionP' * a * i;
         currIndex = currIndex + 1;
     end

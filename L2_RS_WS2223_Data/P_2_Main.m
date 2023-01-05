@@ -17,14 +17,14 @@ q_soll_Pseudo = IK_Pseudo(q,[x y z]);
 
 %% lineare Interpolation
 Zwischenschritte = 128;
-P_start = [0.1 0.1 0.1]';
+P_start = [0.1 0.2 0.3]';
 P_soll = [0.41 0.2595 0.084]';
 
 %P = linear_Interpol(P_start, P_soll, Zwischenschritte);
 
 %% Erweiterung mit Geschw. und Beschleunigung
-v = 0.5;
-a = 0.9;
+v = 0.2;
+a = 0.5;
 [P,testValue] = P_Interp(P_start, P_soll, v, a);
 
 %% Inverse Kinematik für alle P

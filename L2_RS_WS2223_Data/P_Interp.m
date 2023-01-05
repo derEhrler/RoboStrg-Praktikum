@@ -31,28 +31,37 @@ tn = t2 + v/a;
 noSteps = tn / dt;
 noSteps = round(noSteps,TieBreaker="minusinf");
 P = zeros(noSteps,3);
+V = zeros(noSteps,3);
 
 %interpolating for acceleration phase
 currIndex = 1;
 for i = 0:dt:t1
     P(currIndex,:) = directionP' * 0.5 * a * i^2;
+    V(currIndex,:) = a * i;
     currIndex = currIndex + 1;
 end
 
 for i = t1:dt:t2
     P(currIndex,:) = p1' + directionP' * v * (i - t1);
+    V(currIndex,:) = v;
     currIndex = currIndex + 1;
 end
 
 for i = t2:dt:tn
-    P(currIndex,:) = p2' + directionP' * v * (i - t2) - directionP' * 0.5 * a * (i - t2)^2;      
+    P(currIndex,:) = p2' + directionP' * v * (i - t2) - directionP' * 0.5 * a * (i - t2)^2; 
+    V(currIndex,:) = v - a * (i - t2);
     currIndex = currIndex + 1;
 end
 
 
+hold on;
+plot(P(:,1));
+plot(P(:,2));
+plot(P(:,3));
+plot(V(:,1));
+hold off;
 
 
-
-testValue = norm(directionP);
+testValue = V;
 out = P;
 end

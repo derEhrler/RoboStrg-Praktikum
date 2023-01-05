@@ -23,9 +23,8 @@ P_soll = [0.41 0.2595 0.084]';
 %P = linear_Interpol(P_start, P_soll, Zwischenschritte);
 
 %% Erweiterung mit Geschw. und Beschleunigung
-v = 0.2;
-a = 0.5;
+v = 0.5;
+a = 0.9;
 [P,testValue] = P_Interp(P_start, P_soll, v, a);
 
-plot(P(:,1));
 

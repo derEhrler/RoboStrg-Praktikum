@@ -37,7 +37,7 @@ if shortDist == false
     
     %time steps
     noSteps = tn / dt;
-    noSteps = round(noSteps,TieBreaker="plusinf");
+    noSteps = round(noSteps);
     P = zeros(noSteps,3);
     V = zeros(noSteps,3);
     
@@ -76,7 +76,7 @@ if shortDist == true
 
     %time steps
     noSteps = tnkurz / dt;
-    noSteps = round(noSteps,TieBreaker="plusinf");
+    noSteps = round(noSteps);
     P = zeros(noSteps,3);
     V = zeros(noSteps,3);
 

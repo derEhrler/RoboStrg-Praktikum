@@ -59,13 +59,17 @@ std::vector<double> posLowerLimit {-10,50,19,-10,-10,-10};
 
 
 
-
-
 std::vector<double> PID::calculate(std::vector<double> setValue,std::vector<double> currentValue){
 	std::vector<double> u (mProportionalGain.size());
 	mIntegralUpperLimit = {200,200,200,200,200,200};
 	mIntegralLowerLimit = {-200,-200,-200,-200,-200,-200};
 	for (unsigned int i = 0; i < mProportionalGain.size(); i++){ // i ist Anzahl an Gelenken
+		// Gelenkwinkelbegrenzung
+		if(setValue[i] < posLowerLimit[i])
+			setValue[i] = posLowerLimit[i];
+		if(setValue[i] > posUpperLimit[i])
+			setValue[i] = posUpperLimit[i];
+
 		// Complete the controller here:
 		merror[i] = setValue[i] - currentValue[i];
 		mIntegralSum[i] += merror[i];
@@ -84,11 +88,12 @@ std::vector<double> PID::calculate(std::vector<double> setValue,std::vector<doub
 			u[i] = veloUpperLimit[i];
 		if(u[i] < veloLowerLimit[i])
 			u[i] = veloLowerLimit[i];
+		// cout << merror[i] << " ";
 	}
 
 	mPreviousCurrentValue = currentValue;
 	mPreviousSetValue = setValue;
-
+	//cout << endl;
 	return u;
 }
 

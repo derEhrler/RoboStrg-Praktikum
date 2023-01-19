@@ -59,11 +59,12 @@ void RobotThread::ControlThread(){
 	std::vector<double> setPoint = Robot.getPosition();
 	setPoint[0] += 100;
 	//Set P-gain
-	std::vector<double> pg {12,0,0,0,0,0};
+	std::vector<double> pg {12,12,12,12,12,12};
 
-	std::vector<double> ig {19.2,0,0,0,0,0};
-	std::vector<double> dg1 = {1.875,0,0,0,0,0};
-	std::vector<double> dg2 = {1.875,0,0,0,0,0};
+	//Set
+	std::vector<double> ig {19.2,19.2,19.2,19.2,19.2,19.2};
+	std::vector<double> dg1 = {1.875,1.875,1.875,1.875,1.875,1.875};
+	std::vector<double> dg2 = {1.875,1.875,1.875,1.875,1.875,1.875};
 
 	//Init control value
 	std::vector<double> u  {5,0,0,0,0,0};
@@ -82,7 +83,7 @@ void RobotThread::ControlThread(){
 	int Schritte = 707;
 	double Trajektorie [Schritte][6];
 	string tmp;
-	string P_filename("P_Matrix.txt");
+	string P_filename("P_Matrix_707x6.txt");
 	ifstream input(P_filename);
 	if(input)
 	{
@@ -100,7 +101,6 @@ void RobotThread::ControlThread(){
 	}
 	cout << endl;
 
-
 	Store Data;
 	Data.open();
 
@@ -114,15 +114,16 @@ void RobotThread::ControlThread(){
 
 		for (int j = 0; j < 6; j++) {
 			setPoint[j] = Trajektorie[trajectorieCnt][j];
+		}
+
 
 		u = PositionController.calculate(setPoint,Robot.getPosition());
-
 		Robot.setVelocity(u);
 		Robot.Update();
 
 		// Delays the loop so that Fsample is fulfilled
 		LT.Delay();
-		}
+
 		//STOP function
 		posError = setPoint[0]-Robot.getPosition()[0];
 
@@ -137,14 +138,16 @@ void RobotThread::ControlThread(){
 		else {
 			counter = 0;
 		}
-		cout << counter << endl;
+		// cout << counter << endl;
 
-		if(counter >= 50)
+		if(counter >= 2000)
 			Activate = 0;
 
 		trajectorieCnt++;
 		if (trajectorieCnt >= Schritte)
 			Activate = !Activate;
+		std::vector<double> tmp = Robot.getPosition();
+		cout << tmp[0] << " " << tmp[1] << " " << tmp[2]<< " " << tmp[3]<< " " << tmp[4]<< " " << tmp[5] << endl;
 
 	}
 

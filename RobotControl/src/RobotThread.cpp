@@ -12,6 +12,7 @@
 #include "Store.h"
 #include <fstream>
 #include <string>
+#include "Drehmoment.h"
 using namespace std;
 
 RobotThread::RobotThread():TheThread(){
@@ -99,7 +100,7 @@ void RobotThread::ControlThread(){
 	Data.open();
 
 	// values for main loop
-	double posError;
+	std::vector<double> posError;
 	double veloError;
 	double stopCondition = 3;
 	int counter = 0;
@@ -107,6 +108,9 @@ void RobotThread::ControlThread(){
 
 	// Main loop starting here
 	while(Activate){
+	std::vector<double> acceleration {0,0,0,0,0,0};
+	std::vector<double> Fsoll {10,10,10,10,10,10};
+	std::vector<double> setForce {0,0,0,0,0,0};
 
 		// write angles to file for PID control optimization
 		Data.write(to_string((Robot.getPosition()[0])));
@@ -117,7 +121,13 @@ void RobotThread::ControlThread(){
 		}
 
 		// calculate u und update robot
-		u = PositionController.calculate(setPoint,Robot.getPosition());
+		posError = setPoint-Robot.getPosition(); // delta x = x_soll - Positionsmessung
+		Drehmoment(Robot.getPosition(),Robot.JointVelocity,acceleration,Robot.GetTorque());
+
+
+
+		u = PositionController.calculate(setForce,Robot.GetTorque());
+		//u = PositionController.calculate(setPoint,Robot.getPosition());
 		Robot.setVelocity(u);
 		Robot.Update();
 
@@ -125,6 +135,7 @@ void RobotThread::ControlThread(){
 		LT.Delay();
 
 		//STOP function
+		/*
 		posError = setPoint[0]-Robot.getPosition()[0];
 
 		if(posError < 0)
@@ -137,6 +148,7 @@ void RobotThread::ControlThread(){
 
 		if(counter >= 2000)
 			Activate = 0;
+		*/
 
 		// iterate to next point and stop if eof is reached
 		trajectorieCnt++;

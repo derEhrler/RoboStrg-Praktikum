@@ -80,14 +80,14 @@ void RobotThread::ControlThread(){
 
 	// read in MATLAB trajektory
 	int IKsteps = 707; // length of P_Matrix.txt file
+	int trajectorieCnt = 0; // counter for steps taken in IK control loop
 	double trajectory [IKsteps][6];
 	string tmp;
 	string P_filename("P_Matrix_707x6.txt");
 	ifstream input(P_filename);
-	if(input)
-	{
-		for(int i = 0; i < IKsteps; i++)
-		{
+
+	if(input) {
+		for(int i = 0; i < IKsteps; i++) {
 			for(int j = 0; j < 6; j++) {
 				input >> tmp;
 				trajectory[i][j] = stof(tmp);
@@ -100,17 +100,18 @@ void RobotThread::ControlThread(){
 	Data.open();
 
 	// values for main loop
+	// Impedanzregelung
 	std::vector<double> posError;
-	double veloError;
-	double stopCondition = 3;
-	int counter = 0;
-	int trajectorieCnt = 0;
-
-	// Main loop starting here
-	while(Activate){
 	std::vector<double> acceleration {0,0,0,0,0,0};
 	std::vector<double> Fsoll {10,10,10,10,10,10};
 	std::vector<double> setForce {0,0,0,0,0,0};
+	// Stop Function
+	double veloError;
+	double stopCondition = 3;
+	int counter = 0;
+
+	// Main loop starting here
+	while(Activate){
 
 		// write angles to file for PID control optimization
 		Data.write(to_string((Robot.getPosition()[0])));
@@ -126,8 +127,9 @@ void RobotThread::ControlThread(){
 
 
 
-		u = PositionController.calculate(setForce,Robot.GetTorque());
-		//u = PositionController.calculate(setPoint,Robot.getPosition());
+		u = PositionController.calculate(setForce,Robot.GetTorque()); // V3 Impedanzregelung
+		//u = PositionController.calculate(setPoint,Robot.getPosition()); // V2 Positionsregelung
+
 		Robot.setVelocity(u);
 		Robot.Update();
 

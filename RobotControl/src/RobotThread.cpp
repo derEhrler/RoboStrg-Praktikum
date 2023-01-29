@@ -101,17 +101,21 @@ void RobotThread::ControlThread(){
 
 	// values for main loop
 	// Impedanzregelung
-	std::vector<double> posError;
+	double currentPositionError[6] = {0,0,0,0,0,0};
+	double previousPositionError[6] = {0,0,0,0,0,0};
+	double velocityError[6];
+	double impedance[6];
+	int C = 1;
+	int D = 1;
 	std::vector<double> acceleration {0,0,0,0,0,0};
 	std::vector<double> Fsoll {10,10,10,10,10,10};
 	std::vector<double> setForce {0,0,0,0,0,0};
 	// Stop Function
-	double veloError;
 	double stopCondition = 3;
 	int counter = 0;
 
 	// Main loop starting here
-	while(Activate){
+	while(Activate) {
 
 		// write angles to file for PID control optimization
 		Data.write(to_string((Robot.getPosition()[0])));
@@ -121,15 +125,29 @@ void RobotThread::ControlThread(){
 			setPoint[j] = trajectory[trajectorieCnt][j];
 		}
 
+		// calcualtions for Impedance
+		for (int j = 0; j < 6; j++) { // delta x = x_soll - Positionsmessung
+			currentPositionError[j] = setPoint[j] - Robot.getPosition()[j];
+		}
+		for (int j = 0; j < 6; j++) { // delta dx (velocity)
+			velocityError[j] = (currentPositionError[j] - previousPositionError[j]) * FSample;
+		}
+		for (int j = 0; j < 6; j++) { // update positionerror
+			previousPositionError[j] = currentPositionError[j];
+		}
+		for (int j = 0; j < 6; j++) { // calculate impedance
+			impedance[j] = C * currentPositionError[j] + D * velocityError[j];
+		}
+
+		//TODO: F_soll ist noch nicht berücksichtigt
+		//FIXME: for_Schleifen zu viel, vector nutzen
+
+		// gravity compensation
+		Drehmoment(Robot.getPosition(),0,0,impedance);
+
 		// calculate u und update robot
-		posError = setPoint-Robot.getPosition(); // delta x = x_soll - Positionsmessung
-		Drehmoment(Robot.getPosition(),Robot.JointVelocity,acceleration,Robot.GetTorque());
-
-
-
-		u = PositionController.calculate(setForce,Robot.GetTorque()); // V3 Impedanzregelung
 		//u = PositionController.calculate(setPoint,Robot.getPosition()); // V2 Positionsregelung
-
+		u = PositionController.calculate(setForce,Robot.getTorque()); // V3 Impedanzregelung
 		Robot.setVelocity(u);
 		Robot.Update();
 

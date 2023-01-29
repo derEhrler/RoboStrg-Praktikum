@@ -27,7 +27,7 @@
 // Return Type  : void
 //
 void Drehmoment(double q[6], double qd[6], double qdd[6],
-                double Torque[6])
+                double Torque[6]) // maybe using: double (&Torque)[6] :instead for reference
 {
   double d[6];
   double a[6];

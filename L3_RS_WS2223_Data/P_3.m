@@ -64,16 +64,26 @@ A3_l = DH(theta(3),d(3),a(3),alpha(3));
 A4_l = DH(theta(4),d(4),a(4),alpha(4));
 
 T_l = zeros(4,4,4);
+
 T_l(:,:,1) = A0_l*A1_l;
+T_l(1:3,4,1) = T_l(1:3,4,1)+ r_Link(:,1);
+
 T_l(:,:,2) = T_l(:,:,1)*A2_l;
+T_l(1:3,4,2) = T_l(1:3,4,2) + r_Link(:,2);
+
 T_l(:,:,3) = T_l(:,:,2)*A3_l;
+T_l(1:3,4,3) = T_l(1:3,4,3) + r_Link(:,3);
+
 T_l(:,:,4) = T_l(:,:,3)*A4_l;
+T_l(1:3,4,4) = T_l(1:3,4,4) + r_Link(:,4);
 
 %Transformationsmatrizen fuer Motoren
 A0_m = [1 0 0 0
         0 1 0 0
         0 0 1 0
         0 0 0 1];
+A0_m(1:3,4) = A0_m(1:3,4) + r_Motor(:,1);
+
 A1_m = DH(theta(1),d(1),a(1),alpha(1));
 A2_m = DH(theta(2),d(2),a(2),alpha(2));
 A3_m = DH(theta(3),d(3),a(3),alpha(3));
@@ -81,8 +91,14 @@ A4_m = DH(theta(4),d(4),a(4),alpha(4));
 
 T_m = zeros(4,4,4);
 T_m(:,:,1) = A0_m*A1_m;
+T_m(1:3,4,1) = T_m(1:3,4,1) + r_Motor(:,2); 
+
 T_m(:,:,2) = T_m(:,:,1)*A2_m;
+T_m(1:3,4,2) = T_m(1:3,4,2) + r_Motor(:,3); 
+
 T_m(:,:,3) = T_m(:,:,2)*A3_m;
+T_m(1:3,4,3) = T_m(1:3,4,3) + r_Motor(:,4); 
+
 T_m(:,:,4) = T_m(:,:,3)*A4_m;
 
 %Erzeugen Sie die einzelnen Jacobi-Matrizen und speichern Sie diese als
@@ -94,6 +110,6 @@ J_l = JacobiMatrix(T_l);
 %Jacobi_Matrix Motor 1-4:
 J_m = JacobiMatrix(T_m);
 
-M = Drehmoment(q,g,J_l,J_m);
+M = Drehmoment(q,g,J_l,J_m,m_Link,m_Motor);
 
 

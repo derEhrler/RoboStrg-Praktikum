@@ -7,8 +7,9 @@ D6 = 0.160;
 e2 = 0.0098;
 d6b = D3+D6;
 
-% Gelenkwinkel
+% Gelenkwinkel, Schwerkraft
 q = [180 120 180 40];
+g = [0 0 9.81]';
 
 %q=sym('q',[4,1]); % Für die symbolische Berechnung
 % DH-Parameter: Roboter
@@ -21,12 +22,12 @@ d(4) = -d6b;    a(4) = 0;   alpha(4) = pi;      theta(4) = q(4);
 r_Link(:,1) = [     0;     -50;         0]/1000;
 r_Link(:,2) = [  -200;       0;         0]/1000;
 r_Link(:,3) = [     0;       0;       -50]/1000;
-r_Link(:,4) = [     20;       0;       -50]/1000;
+r_Link(:,4) = [    20;       0;       -50]/1000;
 
-r_Motor(:,1) = [  0;       0;       150]/1000;
+r_Motor(:,1) = [  0;       0;        150]/1000;
 r_Motor(:,2) = [  0;       0;          0]/1000;
 r_Motor(:,3) = [  0;       0;          0]/1000;
-r_Motor(:,4) = [  0;       0;     -200]/1000;
+r_Motor(:,4) = [  0;       0;       -200]/1000;
 
 % Masse: Link
 m_Link(1) = (200)/1000;
@@ -92,5 +93,7 @@ J_l = JacobiMatrix(T_l);
 
 %Jacobi_Matrix Motor 1-4:
 J_m = JacobiMatrix(T_m);
+
+M = Drehmoment(q,g,J_l,J_m);
 
 

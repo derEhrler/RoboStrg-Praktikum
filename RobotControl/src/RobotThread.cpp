@@ -105,6 +105,7 @@ void RobotThread::ControlThread(){
 	double previousPositionError[6] = {0,0,0,0,0,0};
 	double velocityError[6];
 	double impedance[6];
+	double currentPosition[6];
 	int C = 1;
 	int D = 1;
 	std::vector<double> acceleration {0,0,0,0,0,0};
@@ -139,11 +140,15 @@ void RobotThread::ControlThread(){
 			impedance[j] = C * currentPositionError[j] + D * velocityError[j];
 		}
 
-		//TODO: F_soll ist noch nicht berücksichtigt
-		//FIXME: for_Schleifen zu viel, vector nutzen
-
 		// gravity compensation
-		Drehmoment(Robot.getPosition(),0,0,impedance);
+	 	for (int j = 0; j < 6; j++) { // get current position
+			currentPosition[j] = Robot.getPosition()[j];
+		}
+		Drehmoment(currentPosition,0,0,impedance);
+
+		for (int j = 0; j < 6; j++) { // add F_soll to calculated impedance
+			setForce[j] = impedance[j] + 5;
+		}
 
 		// calculate u und update robot
 		//u = PositionController.calculate(setPoint,Robot.getPosition()); // V2 Positionsregelung
@@ -172,8 +177,10 @@ void RobotThread::ControlThread(){
 
 		// iterate to next point and stop if eof is reached
 		trajectorieCnt++;
-		if (trajectorieCnt >= IKsteps)
-			Activate = !Activate;
+		if (trajectorieCnt >= IKsteps) {
+			trajectorieCnt = IKsteps;
+			// Activate = !Activate;
+		}
 
 		//std::vector<double> tmp = Robot.getPosition();
 		//cout << tmp[0] << " " << tmp[1] << " " << tmp[2]<< " " << tmp[3]<< " " << tmp[4]<< " " << tmp[5] << endl;
